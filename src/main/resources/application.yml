@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: book-store
+  datasource:
+    username: root
+    password: Manh2004
+    url: jdbc:mysql://localhost:3306/book-store
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+  liquibase:
+    change-log: classpath:/db/changelog/appchange-log.xml
+    liquibase-schema: book-store
+
+server:
+  port: 8081
+
+cloudinary:
+  api_key: 829565713471837
+  api_secret: oHpiWWc8qqRFZUkj-kBtXhsVcJ8
+  cloud_name: djuq2enmy
