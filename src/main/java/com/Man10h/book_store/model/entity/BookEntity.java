@@ -7,12 +7,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "product")
+@Table(name = "book")
 @Getter
 @Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@NamedEntityGraph(
+        name = "book-graph",
+        attributeNodes = {
+                @NamedAttributeNode(value = "imageEntityList")
+        }
+)
 public class BookEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,5 +34,4 @@ public class BookEntity {
 
     @OneToMany(mappedBy = "bookEntity", cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
     private List<ItemEntity> itemEntityList = new ArrayList<>();
-
 }

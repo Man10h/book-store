@@ -10,6 +10,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
     @Query(value = """
@@ -34,4 +36,21 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
         where u.username like %:username%
 """)
     public Page<UserResponse> getUsersByUsername(@Param("username") String username, Pageable pageable);
+
+
+    Optional<UserEntity> findByUsername(String username);
+
+    Optional<UserEntity> findByEmail(String email);
+
+    @Query(value = """
+    select new com.Man10h.book_store.model.response.UserResponse(u.id, u.username, u.email, u.enabled, r.name, c.id)
+    from UserEntity u
+    join RoleEntity r
+    on u.roleEntity.id = r.id
+    join CartEntity c
+    on u.id = c.userEntity.id
+    where u.username = :username and u.enabled = :enabled
+""")
+    UserResponse getUserByUsername(@Param("username") String username,
+                                   @Param("enabled") boolean enabled);
 }

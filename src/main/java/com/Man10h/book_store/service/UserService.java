@@ -1,5 +1,6 @@
 package com.Man10h.book_store.service;
 
+import com.Man10h.book_store.model.dto.ChatMessage;
 import com.Man10h.book_store.model.response.UserResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,4 +11,5 @@ public interface UserService {
     public void updateUserRole(Long id);
     public void deleteUser(Long id);
     public Page<UserResponse> getUsersByUsername(@Param("username") String username, Pageable pageable);
+    public void sendMessage(ChatMessage message);
 }

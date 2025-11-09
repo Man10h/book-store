@@ -3,6 +3,7 @@ package com.Man10h.book_store.service;
 import com.Man10h.book_store.model.dto.BookDTO;
 import com.Man10h.book_store.model.entity.BookEntity;
 import com.Man10h.book_store.model.response.BookResponse;
+import com.Man10h.book_store.model.response.PageResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;

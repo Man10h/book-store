@@ -1,6 +1,7 @@
 package com.Man10h.book_store.exception;
 
 import com.Man10h.book_store.exception.exception.BookException;
+import com.Man10h.book_store.exception.exception.ErrorException;
 import com.Man10h.book_store.exception.exception.UserException;
 import com.Man10h.book_store.model.dto.ErrorMessage;
 import org.springframework.http.HttpStatus;
@@ -23,6 +24,15 @@ public class Handler {
     @ExceptionHandler(BookException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorMessage handleBookException(BookException e) {
+        return ErrorMessage.builder()
+                .message(e.getMessage())
+                .code(400)
+                .build();
+    }
+
+    @ExceptionHandler(ErrorException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorMessage handleException(Exception e) {
         return ErrorMessage.builder()
                 .message(e.getMessage())
                 .code(400)

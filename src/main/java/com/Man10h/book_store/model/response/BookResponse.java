@@ -2,6 +2,7 @@ package com.Man10h.book_store.model.response;
 
 import lombok.*;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Getter
@@ -9,7 +10,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class BookResponse {
+public class BookResponse implements Serializable {
     private Long id;
     private String title;
     private String author;

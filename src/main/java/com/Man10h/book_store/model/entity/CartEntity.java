@@ -13,6 +13,20 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@NamedEntityGraph(
+        name = "cart-graph",
+        attributeNodes = {
+                @NamedAttributeNode(value = "itemEntityList", subgraph = "item-subgraph")
+        },
+        subgraphs = {
+                @NamedSubgraph(
+                        name = "item-subgraph",
+                        attributeNodes = {
+                          @NamedAttributeNode(value = "bookEntity")
+                        }
+                )
+        }
+)
 public class CartEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

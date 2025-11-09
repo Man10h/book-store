@@ -1,24 +1,70 @@
 spring:
+
   application:
     name: book-store
+
   datasource:
-    username: root
-    password: Manh2004
-    url: jdbc:mysql://localhost:3306/book-store
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ${SPRING_DATASOURCE_USERNAME:root}
+    password: ${SPRING_DATASOURCE_PASSWORD:Manh2004}
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/book-store}
+
+  data:
+    redis:
+      port: ${SPRING_DATA_REDIS_PORT:6379}
+      host: ${SPRING_DATA_REDIS_HOST:redis}
+      password: ${SPRING_DATA_REDIS_PASSWORD:Manh2004}
+
+  cache:
+    type: redis
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
 
   liquibase:
     change-log: classpath:/db/changelog/appchange-log.xml
-    liquibase-schema: book-store
+    liquibase-schema: ${SPRING_LIQUIBASE_SCHEMA:book-store}
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${SPRING_MAIL_USERNAME:nguyenmanhlc10@gmail.com}
+    password: ${SPRING_MAIL_PASSWORD:aaof rvju disf hati}
+    protocol: smtp
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID:375623715767-3ou3vkfo31733dab9htclek6rlhbjq3c.apps.googleusercontent.com}
+            client-secret: ${GOOGLE_CLIENT_SECRET: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}
+            redirect-uri: ${GOOGLE_REDIRECT_URI:http://localhost:8080/login/oauth2/code/book-store}
+            scope:
+              - email
+              - profile
+        provider:
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
 
 server:
-  port: 8081
+  port: 8080
 
 cloudinary:
-  api_key: 829565713471837
-  api_secret: oHpiWWc8qqRFZUkj-kBtXhsVcJ8
-  cloud_name: djuq2enmy
+  api_key: ${CLOUDINARY_API_KEY:829565713471837}
+  api_secret: ${CLOUDINARY_API_SECRET:oHpiWWc8qqRFZUkj-kBtXhsVcJ8}
+  cloud_name: ${CLOUDINARY_CLOUD_NAME:djuq2enmy}
+
+jwt:
+  secret: ${JWT_SECRET:IHog2o7M6EPmoJ4Y4WBiLbvbCJ+AnYe3C1VmUQdW4gg=}
+
+frontend:
+  url: ${FRONTEND_URL:http://localhost:5187}

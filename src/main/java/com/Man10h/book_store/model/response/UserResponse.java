@@ -13,4 +13,13 @@ public class UserResponse {
     private String email;
     private Boolean enabled;
     private String roleName;
+    private Long cartId;
+
+    public UserResponse(Long id, String username, String email, Boolean enabled, String roleName) {
+        this.id = id;
+        this.username = username;
+        this.email = email;
+        this.enabled = enabled;
+        this.roleName = roleName;
+    }
 }
