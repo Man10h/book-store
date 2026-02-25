@@ -11,6 +11,7 @@ import com.Man10h.book_store.repository.ImageRepository;
 import com.Man10h.book_store.service.BookService;
 import com.Man10h.book_store.service.CloudinaryService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
     private final ImageRepository imageRepository;
@@ -56,6 +58,7 @@ public class BookServiceImpl implements BookService {
                     .title(bookEntity.getTitle())
                     .author(bookEntity.getAuthor())
                     .type(bookEntity.getType())
+                    .price(bookEntity.getPrice())
                     .imagesStringUrl(bookEntity.getImageEntityList().stream().map(ImageEntity::getUrl).collect(Collectors.toList()))
                     .build();
         });
@@ -84,17 +87,23 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public void addBook(BookDTO bookDTO) {
-        BookEntity bookEntity = BookEntity.builder()
-                .title(bookDTO.getTitle())
-                .author(bookDTO.getAuthor())
-                .type(bookDTO.getType())
-                .price(bookDTO.getPrice())
-                .description(bookDTO.getDescription())
-                .imageEntityList(new ArrayList<>())
-                .itemEntityList(new ArrayList<>())
-                .build();
-        bookRepository.save(bookEntity);
-        addImage(bookEntity, bookDTO);
+        try{
+            BookEntity bookEntity = BookEntity.builder()
+                    .title(bookDTO.getTitle())
+                    .author(bookDTO.getAuthor())
+                    .type(bookDTO.getType())
+                    .price(bookDTO.getPrice())
+                    .description(bookDTO.getDescription())
+                    .imageEntityList(new ArrayList<>())
+                    .itemEntityList(new ArrayList<>())
+                    .build();
+            bookRepository.save(bookEntity);
+            addImage(bookEntity, bookDTO);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+
+
     }
 
     @Override

@@ -11,5 +11,4 @@ import lombok.*;
 public class ItemDTO {
     private Long quantity;
     private String status;
-    private Long bookId;
 }

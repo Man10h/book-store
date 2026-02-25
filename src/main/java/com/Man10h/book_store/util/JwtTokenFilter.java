@@ -46,13 +46,15 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             }
             String token = authHeader.substring(7);
             String username = tokenService.getUsername(token);
-            if(SecurityContextHolder.getContext().getAuthentication() == null && username != null){
+            if (!tokenService.validateToken(token)) {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid or expired token");
+                return;
+            }
+            if (SecurityContextHolder.getContext().getAuthentication() == null && username != null) {
                 UserEntity userEntity = (UserEntity) userDetailsService.loadUserByUsername(username);
-                if(tokenService.validateToken(token)){
-                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(username, null, userEntity.getAuthorities());
-                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                }
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userEntity, null, userEntity.getAuthorities());
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authentication);
             }
             filterChain.doFilter(request, response);
         } catch (Exception e) {

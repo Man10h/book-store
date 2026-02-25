@@ -23,7 +23,7 @@ services:
       - redis-data:/data
 
   bookstore:
-    image: nguyenmanhlc10/bookstore:latest
+    image: bookstore:latest
     container_name: bookstore
     environment:
       - SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME}

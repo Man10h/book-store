@@ -23,8 +23,8 @@ public class AdminController {
     @GetMapping("/users")
     public ResponseEntity<?> getUsers(@RequestParam(name = "page") int page,
                                       @RequestParam(name = "size") int size,
-                                      @RequestParam(name = "username") String username) {
-        if(username == null) {
+                                      @RequestParam(name = "username", required = false) String username) {
+        if (username == null || username.trim().isEmpty()) {
             return ResponseEntity.ok(userService.getUsers(PageRequest.of(page, size)));
         }
         return ResponseEntity.ok(userService.getUsersByUsername(username, PageRequest.of(page, size)));

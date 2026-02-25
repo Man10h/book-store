@@ -7,6 +7,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serializable;
+import java.security.Principal;
 import java.time.LocalTime;
 import java.util.*;
 
@@ -17,7 +18,7 @@ import java.util.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserEntity implements Serializable, UserDetails {
+public class UserEntity implements Serializable, UserDetails, Principal {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -41,5 +42,10 @@ public class UserEntity implements Serializable, UserDetails {
     @ManyToOne
     @JoinColumn(name = "role_id")
     private RoleEntity roleEntity;
+
+    @Override
+    public String getName() {
+        return username;
+    }
 }
 

@@ -13,12 +13,16 @@ import java.util.Optional;
 
 @Repository
 public interface BookRepository extends JpaRepository<BookEntity, Long> {
+    // no page + fetch only page or only fetch if want to fetch using entity graph
     @Query("""
     select distinct b from BookEntity b 
-    left join fetch b.imageEntityList
-    where (:text is null or b.title like %:text%) 
-    or (:text is null or b.author like %:text%)
-    or (:type is null or b.type = :type) 
+    where (
+             :text is null\s
+             or b.title like concat('%', :text, '%')
+             or b.author like concat('%', :text, '%')
+      )
+    or (:type is null or b.type = :type)
+                                          
 """)
     Page<BookEntity> findByTitleAndAuthorAndType(@Param("text") String text,
                                           @Param("type") String type,
@@ -26,10 +30,11 @@ public interface BookRepository extends JpaRepository<BookEntity, Long> {
 
 
 
+    // query projection faster than map to entity
     @Query("""
     select distinct b from BookEntity b 
     left join fetch b.imageEntityList
     where b.id = :id
 """)
-    Optional<BookEntity> findById(@Param("id") long id);
+    Optional<BookEntity> findDetailById(@Param("id") long id);
 }

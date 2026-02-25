@@ -3,11 +3,15 @@ package com.Man10h.book_store.controller;
 import com.Man10h.book_store.exception.exception.ErrorException;
 import com.Man10h.book_store.model.dto.ItemDTO;
 import com.Man10h.book_store.model.entity.CartEntity;
+import com.Man10h.book_store.model.entity.UserEntity;
 import com.Man10h.book_store.service.CartService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/user")
 @RequiredArgsConstructor
@@ -15,19 +19,21 @@ public class UserController {
 
     private final CartService cartService;
 
-    @GetMapping("/carts/{id}")
-    public ResponseEntity<?> getCart(@PathVariable(name = "id") Long id){
+    @GetMapping("/carts")
+    public ResponseEntity<?> getCart(@AuthenticationPrincipal UserEntity userEntity){
         try{
-            return ResponseEntity.ok(cartService.findById(id));
+            return ResponseEntity.ok(cartService.getCart(userEntity));
         }catch (Exception e){
             throw new ErrorException(e.getMessage());
         }
     }
 
-    @PostMapping("/carts/{id}")
-    public ResponseEntity<?> addItem(@PathVariable(name = "id") Long id, @RequestBody ItemDTO itemDTO){
+    @PostMapping("/carts/items/{id}")
+    public ResponseEntity<?> addItem(@AuthenticationPrincipal UserEntity userEntity,
+                                     @RequestBody ItemDTO itemDTO,
+                                     @PathVariable("id") Long id){
         try{
-            cartService.addItem(itemDTO, id);
+            cartService.addItem(userEntity, itemDTO, id);
             return ResponseEntity.ok().build();
         }catch (Exception e){
             throw new ErrorException(e.getMessage());

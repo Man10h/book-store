@@ -1,5 +1,6 @@
 package com.Man10h.book_store.configuration;
 
+import com.Man10h.book_store.util.CustomSuccessHandler;
 import com.Man10h.book_store.util.JwtTokenFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,6 +15,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -29,20 +31,24 @@ public class SecurityFilterChainConfig {
     @Autowired
     private JwtTokenFilter jwtTokenFilter;
 
+    @Autowired
+    private CustomSuccessHandler customSuccessHandler;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable)
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
-                .authorizeHttpRequests(request ->
-                        request.requestMatchers("/api/v1/home**", "/api/v1/home/**").permitAll()
-                                .requestMatchers("/api/v1/admin**", "/api/v1/admin/**").hasRole("ADMIN")
-                                .requestMatchers("/api/v1/user**", "/api/v1/user/**").hasRole("USER")
-                                .anyRequest().authenticated()
-                )
-                .oauth2Client(Customizer.withDefaults())
-                .oauth2Login(Customizer.withDefaults())
+            .csrf(AbstractHttpConfigurer::disable)
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
+            .authorizeHttpRequests(request ->
+                request.requestMatchers("/api/v1/home**", "/api/v1/home/**").permitAll()
+                    .requestMatchers("/oauth2/**").permitAll()
+                    .requestMatchers("/login/**").permitAll()
+                    .requestMatchers("/api/v1/admin**", "/api/v1/admin/**").hasRole("ADMIN")
+                    .requestMatchers("/api/v1/user**", "/api/v1/user/**").hasRole("USER")
+                    .anyRequest().authenticated()
+            )
+            .oauth2Login(oauth2 -> oauth2.successHandler(customSuccessHandler))
         ;
         return http.build();
     }

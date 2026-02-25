@@ -2,13 +2,11 @@ package com.Man10h.book_store.service.impl;
 
 import com.Man10h.book_store.exception.exception.ErrorException;
 import com.Man10h.book_store.model.dto.ItemDTO;
-import com.Man10h.book_store.model.entity.BookEntity;
-import com.Man10h.book_store.model.entity.CartEntity;
-import com.Man10h.book_store.model.entity.ImageEntity;
-import com.Man10h.book_store.model.entity.ItemEntity;
+import com.Man10h.book_store.model.entity.*;
 import com.Man10h.book_store.model.response.BookResponse;
 import com.Man10h.book_store.model.response.CartResponse;
 import com.Man10h.book_store.model.response.ItemResponse;
+import com.Man10h.book_store.repository.BookRepository;
 import com.Man10h.book_store.repository.CartRepository;
 import com.Man10h.book_store.repository.ItemRepository;
 import com.Man10h.book_store.service.CartService;
@@ -29,15 +27,16 @@ import java.util.stream.Collectors;
 public class CartServiceImpl implements CartService {
     private final CartRepository cartRepository;
     private final ItemRepository itemRepository;
+    private final BookRepository bookRepository;
 
     @Override
-    @Cacheable(value = "carts", key = "#id")
-    public CartResponse findById(Long id) {
-        Optional<CartEntity> optional = cartRepository.findById(id);
-        if(optional.isEmpty()){
+    @Cacheable(value = "carts", key = "#userEntity.id")
+    public CartResponse getCart(UserEntity userEntity) {
+        List<CartEntity> cartEntityList = cartRepository.findByUserEntity(userEntity);
+        if(cartEntityList.isEmpty()){
             throw new ErrorException("Cart not found");
         }
-        CartEntity cartEntity = optional.get();
+        CartEntity cartEntity = cartEntityList.getFirst();
         CartResponse cartResponse = CartResponse.builder()
                 .id(cartEntity.getId())
                 .itemResponseList(new ArrayList<>())
@@ -67,16 +66,25 @@ public class CartServiceImpl implements CartService {
         return cartResponse;
     }
 
+
+
     @Transactional
     @CachePut(value = "carts", key = "#cartId")
-    public void addItem(ItemDTO itemDTO, Long cartId) {
+    public void addItem(UserEntity userEntity, ItemDTO itemDTO, Long id) {
         try{
-            itemRepository.insert(
-                    itemDTO.getQuantity(),
-                    itemDTO.getStatus(),
-                    itemDTO.getBookId(),
-                    cartId);
+            BookEntity bookEntity = bookRepository.findById(id).get();
+            List<CartEntity> cartEntityList = cartRepository.findByUserEntity(userEntity);
+            ItemEntity itemEntity = ItemEntity.builder()
+                    .bookEntity(bookEntity)
+                    .quantity(itemDTO.getQuantity())
+                    .cartEntity(cartEntityList.getFirst())
+                    .status(itemDTO.getStatus())
+                    .build();
+            itemRepository.save(itemEntity);
+
+//           itemRepository.insert(itemDTO.getQuantity(), itemDTO.getStatus(), itemDTO.getBookId(), cartId);
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             throw new ErrorException(e.getMessage());
         }
     }

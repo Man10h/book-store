@@ -142,20 +142,20 @@ public class HomeController {
         }
     }
 
-    @GetMapping("/oauth2/token")
-    public ResponseEntity<?> getUserInfo(
-            @RegisteredOAuth2AuthorizedClient("google") OAuth2AuthorizedClient authorizedClient) {
-        String accessToken = authorizedClient.getAccessToken().getTokenValue();
-        try{
-            String token = authenticationService.oauth2Token(accessToken);
-            if(token == null) {
-                return ResponseEntity.badRequest().build();
-            }
-            return ResponseEntity.ok(token);
-        } catch (Exception e) {
-            throw new ErrorException(e.getMessage());
-        }
-    }
+//    @GetMapping("/oauth2/token")
+//    public ResponseEntity<?> getUserInfo(
+//            @RegisteredOAuth2AuthorizedClient("google") OAuth2AuthorizedClient authorizedClient) {
+//        String accessToken = authorizedClient.getAccessToken().getTokenValue();
+//        try{
+//            String token = authenticationService.oauth2Token(accessToken);
+//            if(token == null) {
+//                return ResponseEntity.badRequest().build();
+//            }
+//            return ResponseEntity.ok(token);
+//        } catch (Exception e) {
+//            throw new ErrorException(e.getMessage());
+//        }
+//    }
 
 
     @GetMapping("/logout")

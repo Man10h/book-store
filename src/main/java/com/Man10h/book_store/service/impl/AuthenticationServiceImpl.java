@@ -56,9 +56,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         if(!passwordEncoder.matches(password, user.getPassword()) || !user.getEnabled()) {
             return null;
         }
-        UsernamePasswordAuthenticationToken authenticationToken = new
-                UsernamePasswordAuthenticationToken(username, password, user.getAuthorities());
-        authenticationManager.authenticate(authenticationToken);
+       UsernamePasswordAuthenticationToken authenticationToken = new
+               UsernamePasswordAuthenticationToken(username, password, user.getAuthorities());
+       authenticationManager.authenticate(authenticationToken);
 
         return tokenService.generateToken(user);
     }
@@ -88,14 +88,19 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .verificationCode(code)
                 .verificationCodeExpiration(new Date(new Date().getTime() + 1000 * 15 * 60))
                 .build();
+
+
         userRepository.save(user);
-        send(email, "Verification Code: ", code);
 
         CartEntity cartEntity = CartEntity.builder()
-                .userEntity(user)
                 .itemEntityList(new ArrayList<>())
+                .userEntity(user)
                 .build();
         cartRepository.save(cartEntity);
+
+
+        send(email, "Verification Code: ", code);
+
         return true;
     }
 
@@ -189,11 +194,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         if(response.getStatusCode().isError()){
             return null;
         }
+
         String email = response.getBody().get("email").toString();
         Optional<UserEntity> optionalUser = userRepository.findByEmail(email);
         if(optionalUser.isEmpty()){
             throw new ErrorException("Invalid email");
         }
+
         UserEntity user = optionalUser.get();
         return tokenService.generateToken(user);
     }
