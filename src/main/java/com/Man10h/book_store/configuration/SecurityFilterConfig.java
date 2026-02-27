@@ -23,7 +23,7 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityFilterChainConfig {
+public class SecurityFilterConfig {
 
     @Value("${frontend.url}")
     private String frontend_url;
@@ -41,12 +41,13 @@ public class SecurityFilterChainConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
             .authorizeHttpRequests(request ->
-                request.requestMatchers("/api/v1/home**", "/api/v1/home/**").permitAll()
-                    .requestMatchers("/oauth2/**").permitAll()
-                    .requestMatchers("/login/**").permitAll()
-                    .requestMatchers("/api/v1/admin**", "/api/v1/admin/**").hasRole("ADMIN")
-                    .requestMatchers("/api/v1/user**", "/api/v1/user/**").hasRole("USER")
-                    .anyRequest().authenticated()
+                request
+                        .requestMatchers("/api/v1/home**", "/api/v1/home/**").permitAll()
+                        .requestMatchers("/oauth2/**", "/login/**").permitAll()
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
+                        .requestMatchers("/api/v1/admin**", "/api/v1/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/v1/user**", "/api/v1/user/**").hasRole("USER")
+                        .anyRequest().authenticated()
             )
             .oauth2Login(oauth2 -> oauth2.successHandler(customSuccessHandler))
         ;

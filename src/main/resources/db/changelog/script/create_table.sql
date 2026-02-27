@@ -39,7 +39,7 @@ CREATE TABLE image (
 
 CREATE TABLE cart (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    user_id BIGINT,
+    user_id BIGINT UNIQUE,
     CONSTRAINT fk_cart_user FOREIGN KEY (user_id) REFERENCES user(id)
 );
 

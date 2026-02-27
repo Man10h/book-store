@@ -89,7 +89,7 @@ public class CartServiceImpl implements CartService {
         }
     }
 
-    @Override
+    @Transactional
     public void updateItem(ItemDTO itemDTO, Long itemId) {
         try{
             itemRepository.updateQuantity(itemId, itemDTO.getQuantity());
@@ -98,7 +98,7 @@ public class CartServiceImpl implements CartService {
         }
     }
 
-    @Override
+    @Transactional
     public void deleteItem(Long itemId) {
         try{
             itemRepository.deleteById(itemId);

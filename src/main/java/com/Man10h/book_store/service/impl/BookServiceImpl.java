@@ -18,6 +18,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Duration;
@@ -36,9 +37,9 @@ public class BookServiceImpl implements BookService {
         return 2 + new Random().nextInt(3);
     }
 
-    public void addImage(BookEntity bookEntity, BookDTO bookDTO) {
-        if(bookDTO.getImageMultipartFiles() != null) {
-            for(MultipartFile file : bookDTO.getImageMultipartFiles()) {
+    public void addImage(BookEntity bookEntity, List<MultipartFile> images) {
+        if(images != null) {
+            for(MultipartFile file : images) {
                 Map<String, Object> result = cloudinaryService.upload(file);
                 ImageEntity imageEntity = ImageEntity.builder()
                         .url(result.get("url").toString())
@@ -50,7 +51,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    @Cacheable(value = "books", key = "#text + '_' + #type")
+    @Cacheable(value = "books", key = "#text + '_' + #type + '_' + #pageable.pageNumber + '_' + #pageable.pageSize")
     public Page<BookResponse> findByTitleAndAuthorAndType(String text, String type, Pageable pageable) {
         return bookRepository.findByTitleAndAuthorAndType(text, type, pageable).map(bookEntity -> {
             return BookResponse.builder()
@@ -66,7 +67,7 @@ public class BookServiceImpl implements BookService {
 
 
     @Override
-    @Cacheable(value = "books", key = "#id")
+    @Cacheable(value = "book", key = "#id")
     public BookResponse findById(Long id) {
         Optional<BookEntity> optional = bookRepository.findById(id);
         if(optional.isEmpty()){
@@ -85,8 +86,9 @@ public class BookServiceImpl implements BookService {
 
     }
 
-    @Override
-    public void addBook(BookDTO bookDTO) {
+    @Transactional
+    @CacheEvict(value = "books", allEntries = true)
+    public void addBook(BookDTO bookDTO, List<MultipartFile> images) {
         try{
             BookEntity bookEntity = BookEntity.builder()
                     .title(bookDTO.getTitle())
@@ -98,7 +100,7 @@ public class BookServiceImpl implements BookService {
                     .itemEntityList(new ArrayList<>())
                     .build();
             bookRepository.save(bookEntity);
-            addImage(bookEntity, bookDTO);
+            addImage(bookEntity, images);
         } catch (Exception e) {
             log.error(e.getMessage());
         }
@@ -106,9 +108,9 @@ public class BookServiceImpl implements BookService {
 
     }
 
-    @Override
-    @CachePut(value = "books", key = "#id")
-    public void updateBook(BookDTO bookDTO, Long id) {
+    @Transactional
+    @CachePut(value = "book", key = "#id")
+    public void updateBook(Long id, BookDTO bookDTO, List<MultipartFile> images) {
         String key = "books:" + id;
         Optional<BookEntity> optional = bookRepository.findById(id);
         if(optional.isEmpty()){
@@ -131,11 +133,11 @@ public class BookServiceImpl implements BookService {
             bookEntity.setPrice(bookDTO.getPrice());
         }
         bookRepository.save(bookEntity);
-        addImage(bookEntity, bookDTO);
+        addImage(bookEntity, images);
     }
 
-    @Override
-    @CacheEvict(value = "books", key = "#id")
+    @Transactional
+    @CacheEvict(value = "book", key = "#id")
     public void deleteBook(Long id) {
         try{
             bookRepository.deleteById(id);

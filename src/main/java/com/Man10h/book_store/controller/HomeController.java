@@ -8,6 +8,8 @@ import com.Man10h.book_store.model.response.UserResponse;
 import com.Man10h.book_store.service.AuthenticationService;
 import com.Man10h.book_store.service.BookService;
 import com.Man10h.book_store.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -25,14 +27,20 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/v1/home")
 @RequiredArgsConstructor
+@Tag(name = "HOME API")
 public class HomeController {
 
     private final AuthenticationService authenticationService;
     private final BookService bookService;
     private final UserService userService;
 
+    @GetMapping
+    public ResponseEntity<?> hello(){
+        return ResponseEntity.ok("Hello World!");
+    }
 
     @GetMapping("/books")
+    @Operation(summary = "Get all books")
     public ResponseEntity<?> getBooks(@RequestParam(name = "text") String text,
                                       @RequestParam(name = "type") String type,
                                       @RequestParam(name = "page") int page,
@@ -41,11 +49,13 @@ public class HomeController {
     }
 
     @GetMapping("/books/{id}")
+    @Operation(summary = "Get book by id")
     public ResponseEntity<?> getBook(@PathVariable(name = "id") Long id){
         return ResponseEntity.ok(bookService.findById(id));
     }
 
     @PostMapping("/login")
+    @Operation(summary = "Login")
     public ResponseEntity<?> login(@Valid @RequestBody UserLoginDTO userLoginDTO,
                                    BindingResult bindingResult) {
         try{
@@ -63,6 +73,7 @@ public class HomeController {
     }
 
     @PostMapping("/register")
+    @Operation(summary = "Register")
     public ResponseEntity<?> register(@Valid @RequestBody UserDTO userDTO,
                                       BindingResult bindingResult) {
         try{
@@ -80,6 +91,7 @@ public class HomeController {
     }
 
     @GetMapping("/verify")
+    @Operation(summary = "Verify account")
     public ResponseEntity<?> verify(@RequestParam(name = "email") String email,
                                     @RequestParam(name = "code") String code) {
         try{
@@ -94,6 +106,7 @@ public class HomeController {
     }
 
     @GetMapping("/resend")
+    @Operation(summary = "Resend verification code")
     public ResponseEntity<?> verify(@RequestParam(name = "email") String email) {
         try{
             boolean result = authenticationService.resendVerificationCode(email);
@@ -107,6 +120,7 @@ public class HomeController {
     }
 
     @GetMapping("/forgot-password")
+    @Operation(summary = "Forgot password")
     public ResponseEntity<?> forgotPassword(@RequestParam(name = "email") String email) {
         try{
             boolean result = authenticationService.forgotPassword(email);
@@ -120,6 +134,7 @@ public class HomeController {
     }
 
     @GetMapping("/token-info")
+    @Operation(summary = "Token info")
     public ResponseEntity<?> tokenInfo(@RequestParam(name = "token") String token) {
         try{
             UserResponse result = authenticationService.getUserByToken(token);
@@ -133,6 +148,7 @@ public class HomeController {
     }
 
     @MessageMapping("/chatPrivate")
+    @Operation(summary = "Chat")
     public ResponseEntity<?> sendToUser(@Payload ChatMessage message) {
         try{
             userService.sendMessage(message);

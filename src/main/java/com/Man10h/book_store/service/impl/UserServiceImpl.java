@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -26,13 +27,13 @@ public class UserServiceImpl implements UserService {
     private final SimpMessagingTemplate messagingTemplate;
 
     @Override
-    @Cacheable(value = "users", key = "1")
+    @Cacheable(value = "users", key = "#pageable.pageNumber + '_' + #pageable.pageSize")
     public Page<UserResponse> getUsers(Pageable pageable) {
         return userRepository.getUsers(pageable);
     }
 
-    @Override
-    @CacheEvict(value = "users", key = "1")
+    @Transactional
+    @CacheEvict(value = "users", allEntries = true)
     public void updateUserRole(Long id) {
         try{
             userRepository.updateUserRole(id, 2L);
@@ -41,8 +42,8 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    @Override
-    @CacheEvict(value = "users", key = "1")
+    @Transactional
+    @CacheEvict(value = "users", allEntries = true)
     public void deleteUser(Long id) {
         try{
             userRepository.deleteById(id);

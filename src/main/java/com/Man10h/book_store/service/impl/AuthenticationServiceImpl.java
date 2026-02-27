@@ -26,6 +26,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
@@ -63,7 +64,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return tokenService.generateToken(user);
     }
 
-    @Override
+    @Transactional
     public boolean register(UserDTO userDTO) {
         String username = userDTO.getUsername();
         String password = userDTO.getPassword();
