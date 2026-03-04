@@ -1,6 +1,6 @@
 package com.Man10h.book_store.util;
 
-import com.Man10h.book_store.exception.exception.ErrorException;
+import com.Man10h.book_store.exception.ErrorException;
 import com.Man10h.book_store.model.entity.CartEntity;
 import com.Man10h.book_store.model.entity.UserEntity;
 import com.Man10h.book_store.model.entity.RoleEntity;
@@ -8,7 +8,6 @@ import com.Man10h.book_store.repository.CartRepository;
 import com.Man10h.book_store.repository.UserRepository;
 import com.Man10h.book_store.repository.RoleRepository;
 import com.Man10h.book_store.service.TokenService;
-import com.Man10h.book_store.service.UserService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -22,7 +21,6 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
-import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor

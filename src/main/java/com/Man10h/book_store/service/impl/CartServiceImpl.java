@@ -1,6 +1,9 @@
 package com.Man10h.book_store.service.impl;
 
-import com.Man10h.book_store.exception.exception.ErrorException;
+import com.Man10h.book_store.exception.business.BookNotFoundException;
+import com.Man10h.book_store.exception.business.CartNotFoundException;
+import com.Man10h.book_store.exception.business.ItemNotFoundException;
+import com.Man10h.book_store.exception.ErrorException;
 import com.Man10h.book_store.model.dto.ItemDTO;
 import com.Man10h.book_store.model.entity.*;
 import com.Man10h.book_store.model.response.BookResponse;
@@ -11,7 +14,6 @@ import com.Man10h.book_store.repository.CartRepository;
 import com.Man10h.book_store.repository.ItemRepository;
 import com.Man10h.book_store.service.CartService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -34,7 +36,7 @@ public class CartServiceImpl implements CartService {
     public CartResponse getCart(UserEntity userEntity) {
         List<CartEntity> cartEntityList = cartRepository.findByUserEntity(userEntity);
         if(cartEntityList.isEmpty()){
-            throw new ErrorException("Cart not found");
+            throw new CartNotFoundException("Cart not found");
         }
         CartEntity cartEntity = cartEntityList.getFirst();
         CartResponse cartResponse = CartResponse.builder()
@@ -71,29 +73,31 @@ public class CartServiceImpl implements CartService {
     @Transactional
     @CachePut(value = "carts", key = "#cartId")
     public void addItem(UserEntity userEntity, ItemDTO itemDTO, Long id) {
-        try{
-            BookEntity bookEntity = bookRepository.findById(id).get();
-            List<CartEntity> cartEntityList = cartRepository.findByUserEntity(userEntity);
-            ItemEntity itemEntity = ItemEntity.builder()
-                    .bookEntity(bookEntity)
-                    .quantity(itemDTO.getQuantity())
-                    .cartEntity(cartEntityList.getFirst())
-                    .status(itemDTO.getStatus())
-                    .build();
-            itemRepository.save(itemEntity);
-
-//           itemRepository.insert(itemDTO.getQuantity(), itemDTO.getStatus(), itemDTO.getBookId(), cartId);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            throw new ErrorException(e.getMessage());
+        Optional<BookEntity> optionalBookEntity = bookRepository.findById(id);
+        if(optionalBookEntity.isEmpty()){
+            throw new BookNotFoundException("Book not found");
         }
+        List<CartEntity> cartEntityList = cartRepository.findByUserEntity(userEntity);
+        if(cartEntityList.isEmpty()){
+            throw new CartNotFoundException("Cart not found");
+        }
+        ItemEntity itemEntity = ItemEntity.builder()
+                .bookEntity(optionalBookEntity.get())
+                .quantity(itemDTO.getQuantity())
+                .cartEntity(cartEntityList.getFirst())
+                .status(itemDTO.getStatus())
+                .build();
+        itemRepository.save(itemEntity);
     }
 
     @Transactional
     public void updateItem(ItemDTO itemDTO, Long itemId) {
         try{
             itemRepository.updateQuantity(itemId, itemDTO.getQuantity());
-        } catch (Exception e) {
+        }catch (ItemNotFoundException e) {
+            throw new ItemNotFoundException(e.getMessage());
+        }
+        catch (Exception e) {
             throw new ErrorException(e.getMessage());
         }
     }
@@ -102,7 +106,10 @@ public class CartServiceImpl implements CartService {
     public void deleteItem(Long itemId) {
         try{
             itemRepository.deleteById(itemId);
-        } catch (Exception e) {
+        } catch (ItemNotFoundException e) {
+            throw new ItemNotFoundException(e.getMessage());
+        }
+        catch (Exception e) {
             throw new ErrorException(e.getMessage());
         }
     }

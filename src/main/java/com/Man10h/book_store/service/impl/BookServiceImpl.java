@@ -1,6 +1,6 @@
 package com.Man10h.book_store.service.impl;
 
-import com.Man10h.book_store.exception.exception.BookException;
+import com.Man10h.book_store.exception.business.BookNotFoundException;
 import com.Man10h.book_store.model.dto.BookDTO;
 import com.Man10h.book_store.model.entity.BookEntity;
 import com.Man10h.book_store.model.entity.ImageEntity;
@@ -71,7 +71,7 @@ public class BookServiceImpl implements BookService {
     public BookResponse findById(Long id) {
         Optional<BookEntity> optional = bookRepository.findById(id);
         if(optional.isEmpty()){
-            throw new BookException("Book not found");
+            throw new BookNotFoundException("Book not found");
         }
         BookEntity bookEntity = optional.get();
         return BookResponse.builder()
@@ -89,23 +89,17 @@ public class BookServiceImpl implements BookService {
     @Transactional
     @CacheEvict(value = "books", allEntries = true)
     public void addBook(BookDTO bookDTO, List<MultipartFile> images) {
-        try{
-            BookEntity bookEntity = BookEntity.builder()
-                    .title(bookDTO.getTitle())
-                    .author(bookDTO.getAuthor())
-                    .type(bookDTO.getType())
-                    .price(bookDTO.getPrice())
-                    .description(bookDTO.getDescription())
-                    .imageEntityList(new ArrayList<>())
-                    .itemEntityList(new ArrayList<>())
-                    .build();
-            bookRepository.save(bookEntity);
-            addImage(bookEntity, images);
-        } catch (Exception e) {
-            log.error(e.getMessage());
-        }
-
-
+        BookEntity bookEntity = BookEntity.builder()
+                .title(bookDTO.getTitle())
+                .author(bookDTO.getAuthor())
+                .type(bookDTO.getType())
+                .price(bookDTO.getPrice())
+                .description(bookDTO.getDescription())
+                .imageEntityList(new ArrayList<>())
+                .itemEntityList(new ArrayList<>())
+                .build();
+        bookRepository.save(bookEntity);
+        addImage(bookEntity, images);
     }
 
     @Transactional
@@ -114,7 +108,7 @@ public class BookServiceImpl implements BookService {
         String key = "books:" + id;
         Optional<BookEntity> optional = bookRepository.findById(id);
         if(optional.isEmpty()){
-            throw new BookException("Book not found");
+            throw new BookNotFoundException("Book not found");
         }
         BookEntity bookEntity = optional.get();
         if(bookDTO.getTitle() != null){
@@ -141,8 +135,8 @@ public class BookServiceImpl implements BookService {
     public void deleteBook(Long id) {
         try{
             bookRepository.deleteById(id);
-        }catch (Exception e){
-            throw new BookException("Book not found");
+        }catch (BookNotFoundException e){
+            throw new BookNotFoundException("Book not found");
         }
     }
 }

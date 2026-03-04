@@ -1,6 +1,6 @@
 package com.Man10h.book_store.service.impl;
 
-import com.Man10h.book_store.exception.exception.ErrorException;
+import com.Man10h.book_store.exception.ErrorException;
 import com.Man10h.book_store.service.MailService;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;

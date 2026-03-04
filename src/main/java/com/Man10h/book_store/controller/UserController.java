@@ -1,8 +1,7 @@
 package com.Man10h.book_store.controller;
 
-import com.Man10h.book_store.exception.exception.ErrorException;
+import com.Man10h.book_store.exception.ErrorException;
 import com.Man10h.book_store.model.dto.ItemDTO;
-import com.Man10h.book_store.model.entity.CartEntity;
 import com.Man10h.book_store.model.entity.UserEntity;
 import com.Man10h.book_store.service.CartService;
 import io.swagger.v3.oas.annotations.Operation;

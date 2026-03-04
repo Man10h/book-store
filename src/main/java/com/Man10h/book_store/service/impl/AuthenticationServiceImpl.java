@@ -1,6 +1,10 @@
 package com.Man10h.book_store.service.impl;
 
-import com.Man10h.book_store.exception.exception.ErrorException;
+import com.Man10h.book_store.exception.business.AccountExistsException;
+import com.Man10h.book_store.exception.business.AccountNotFoundException;
+import com.Man10h.book_store.exception.business.AccountDisabledException;
+import com.Man10h.book_store.exception.client.AuthenticationFailException;
+import com.Man10h.book_store.exception.ErrorException;
 import com.Man10h.book_store.model.dto.UserDTO;
 import com.Man10h.book_store.model.dto.UserLoginDTO;
 import com.Man10h.book_store.model.entity.CartEntity;
@@ -20,9 +24,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
 import org.springframework.stereotype.Service;
@@ -47,21 +53,27 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public String login(UserLoginDTO userLoginDTO) {
-        String username = userLoginDTO.getUsername();
-        String password = userLoginDTO.getPassword();
-        Optional<UserEntity> optionalUser = userRepository.findByUsername(username);
-        if (optionalUser.isEmpty()) {
-            return null;
-        }
-        UserEntity user = optionalUser.get();
-        if(!passwordEncoder.matches(password, user.getPassword()) || !user.getEnabled()) {
-            return null;
-        }
-       UsernamePasswordAuthenticationToken authenticationToken = new
-               UsernamePasswordAuthenticationToken(username, password, user.getAuthorities());
-       authenticationManager.authenticate(authenticationToken);
+        try {
 
-        return tokenService.generateToken(user);
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            userLoginDTO.getUsername(),
+                            userLoginDTO.getPassword()
+                    )
+            );
+
+            UserEntity user = (UserEntity) authentication.getPrincipal();
+
+            if (!user.getEnabled()) {
+                throw new AccountDisabledException("Account disabled");
+            }
+
+            return tokenService.generateToken(user);
+
+        } catch (BadCredentialsException | UsernameNotFoundException ex) {
+            throw new AuthenticationFailException("Username or password is incorrect");
+
+        }
     }
 
     @Transactional
@@ -69,14 +81,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         String username = userDTO.getUsername();
         String password = userDTO.getPassword();
         String email = userDTO.getEmail();
-        Optional<UserEntity> optionalUsername = userRepository.findByUsername(username);
-        if (optionalUsername.isPresent()) {
-            return false;
+
+        Optional<UserEntity> optionalUser = userRepository.findByUsernameOrEmail(username, email);
+        if (optionalUser.isPresent()) {
+            throw new AccountExistsException("Account already exists");
         }
-        Optional<UserEntity> optionalEmail = userRepository.findByEmail(email);
-        if (optionalEmail.isPresent()) {
-            return false;
-        }
+
         RoleEntity role = roleRepository.findById(1L).orElse(null);
         String code = generateCode();
         UserEntity user = UserEntity.builder()
@@ -109,7 +119,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public boolean verify(String email, String code) {
         Optional<UserEntity> optionalEmail = userRepository.findByEmail(email);
         if(optionalEmail.isEmpty()){
-            return false;
+            throw new AccountNotFoundException("Account not found");
         }
         UserEntity user = optionalEmail.get();
 
@@ -128,7 +138,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public boolean resendVerificationCode(String email) {
         Optional<UserEntity> optionalEmail = userRepository.findByEmail(email);
         if(optionalEmail.isEmpty()){
-            return false;
+            throw new AccountNotFoundException("Account not found");
         }
         UserEntity user = optionalEmail.get();
 
@@ -148,11 +158,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public boolean forgotPassword(String email) {
         Optional<UserEntity> optionalEmail = userRepository.findByEmail(email);
         if(optionalEmail.isEmpty()){
-            return false;
+            throw new AccountNotFoundException("Account not found");
         }
         UserEntity user = optionalEmail.get();
         if(!user.getEnabled()){
-            return false;
+            throw new AccountDisabledException("Account disabled");
         }
         String password = generateCode();
         user.setPassword(passwordEncoder.encode(password));
@@ -167,7 +177,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         String username = tokenService.getUsername(token);
         Optional<UserEntity> optionalUser = userRepository.findByUsername(username);
         if(optionalUser.isEmpty()){
-            return null;
+            throw new AccountNotFoundException("Account not found");
         }
         UserEntity user = optionalUser.get();
         return UserResponse.builder()
@@ -210,7 +220,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public void logout() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if(authentication == null){
-            throw new ErrorException("Not logged in");
+            throw new AuthenticationFailException("Authentication required");
         }
         SecurityContextHolder.clearContext();
     }

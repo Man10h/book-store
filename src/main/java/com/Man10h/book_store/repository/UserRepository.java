@@ -53,4 +53,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 """)
     UserResponse getUserByUsername(@Param("username") String username,
                                    @Param("enabled") boolean enabled);
+
+
+    Optional<UserEntity> findByUsernameOrEmail(String username, String email);
 }

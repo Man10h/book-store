@@ -1,6 +1,7 @@
 package com.Man10h.book_store.service.impl;
 
-import com.Man10h.book_store.exception.exception.ErrorException;
+import com.Man10h.book_store.exception.client.AuthenticationFailException;
+import com.Man10h.book_store.exception.ErrorException;
 import com.Man10h.book_store.model.entity.UserEntity;
 import com.Man10h.book_store.repository.UserRepository;
 import com.Man10h.book_store.service.TokenService;
@@ -18,7 +19,6 @@ import org.springframework.stereotype.Service;
 import javax.crypto.SecretKey;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -53,7 +53,7 @@ public class TokenServiceImpl implements TokenService {
             boolean x = signedJWT.verify(verifier) && new Date().before(signedJWT.getJWTClaimsSet().getExpirationTime());
             return signedJWT.verify(verifier) && new Date().before(signedJWT.getJWTClaimsSet().getExpirationTime());
         } catch (Exception e) {
-            return false;
+            throw new ErrorException(e.getMessage());
         }
     }
 
@@ -64,7 +64,7 @@ public class TokenServiceImpl implements TokenService {
                 SignedJWT signedJWT = SignedJWT.parse(token);
                 return signedJWT.getJWTClaimsSet().getSubject();
             }
-            throw new ErrorException("Invalid token");
+            throw new AuthenticationFailException("Invalid token");
 
         } catch (Exception e) {
             throw new ErrorException(e.getMessage());

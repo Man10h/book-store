@@ -1,6 +1,6 @@
 package com.Man10h.book_store.configuration;
 
-import com.Man10h.book_store.exception.exception.ErrorException;
+import com.Man10h.book_store.exception.ErrorException;
 import com.Man10h.book_store.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

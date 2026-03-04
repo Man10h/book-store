@@ -9,5 +9,6 @@ import lombok.*;
 @Builder
 public class ErrorMessage {
     private String message;
-    private int code;
+    private String error;
+    private int status;
 }

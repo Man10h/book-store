@@ -1,6 +1,6 @@
 package com.Man10h.book_store.controller;
 
-import com.Man10h.book_store.exception.exception.ErrorException;
+import com.Man10h.book_store.exception.ErrorException;
 import com.Man10h.book_store.model.dto.ChatMessage;
 import com.Man10h.book_store.model.dto.UserDTO;
 import com.Man10h.book_store.model.dto.UserLoginDTO;
@@ -16,13 +16,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
-import org.springframework.security.oauth2.client.annotation.RegisteredOAuth2AuthorizedClient;
-import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/home")
@@ -58,36 +53,25 @@ public class HomeController {
     @Operation(summary = "Login")
     public ResponseEntity<?> login(@Valid @RequestBody UserLoginDTO userLoginDTO,
                                    BindingResult bindingResult) {
-        try{
-            if(bindingResult.hasErrors()) {
-                return ResponseEntity.badRequest().build();
-            }
-            String token = authenticationService.login(userLoginDTO);
-            if(token == null) {
-                return ResponseEntity.badRequest().build();
-            }
-            return ResponseEntity.ok(token);
-        } catch (Exception e) {
-            throw new ErrorException(e.getMessage());
+        if(bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().build();
         }
+        String token = authenticationService.login(userLoginDTO);
+        if(token == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(token);
     }
 
     @PostMapping("/register")
     @Operation(summary = "Register")
     public ResponseEntity<?> register(@Valid @RequestBody UserDTO userDTO,
                                       BindingResult bindingResult) {
-        try{
-            if(bindingResult.hasErrors()) {
-                return ResponseEntity.badRequest().build();
-            }
-            boolean result = authenticationService.register(userDTO);
-            if(!result) {
-                return ResponseEntity.badRequest().build();
-            }
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            throw new ErrorException(e.getMessage());
+        if(bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().build();
         }
+        authenticationService.register(userDTO);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/verify")
