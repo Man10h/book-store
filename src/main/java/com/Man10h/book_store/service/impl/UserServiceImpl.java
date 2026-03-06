@@ -54,6 +54,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Cacheable(value = "users:username", key = "#username")
     public Page<UserResponse> getUsersByUsername(String username, Pageable pageable) {
         return userRepository.getUsersByUsername(username, pageable);
     }

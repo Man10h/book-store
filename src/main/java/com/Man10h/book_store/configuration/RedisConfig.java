@@ -43,9 +43,7 @@ public class RedisConfig {
                 .cacheDefaults(redisCacheConfiguration)
                 .withCacheConfiguration("users", myCacheConfiguration(Duration.ofMinutes(3)))
                 .withCacheConfiguration("books", myCacheConfiguration(Duration.ofMinutes(3)))
-                .withCacheConfiguration("carts", myCacheConfiguration(Duration.ofMinutes(3)))
-                .withCacheConfiguration("tokens", myCacheConfiguration(Duration.ofMinutes(3)))
-                .withCacheConfiguration("user", myCacheConfiguration(Duration.ofMinutes(3)))
+                .withCacheConfiguration("users:username", myCacheConfiguration(Duration.ofMinutes(3)))
                 .withCacheConfiguration("book", myCacheConfiguration(Duration.ofMinutes(3)))
                 .build();
     }

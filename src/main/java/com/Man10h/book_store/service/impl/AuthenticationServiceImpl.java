@@ -172,7 +172,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    @Cacheable(value = "tokens", key = "#token")
     public UserResponse getUserByToken(String token) {
         String username = tokenService.getUsername(token);
         Optional<UserEntity> optionalUser = userRepository.findByUsername(username);
@@ -189,7 +188,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    @Cacheable(value = "tokens", key = "#accessToken")
     public String oauth2Token(String accessToken) {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(accessToken);

@@ -32,7 +32,6 @@ public class CartServiceImpl implements CartService {
     private final BookRepository bookRepository;
 
     @Override
-    @Cacheable(value = "carts", key = "#userEntity.id")
     public CartResponse getCart(UserEntity userEntity) {
         List<CartEntity> cartEntityList = cartRepository.findByUserEntity(userEntity);
         if(cartEntityList.isEmpty()){
@@ -71,16 +70,17 @@ public class CartServiceImpl implements CartService {
 
 
     @Transactional
-    @CachePut(value = "carts", key = "#cartId")
     public void addItem(UserEntity userEntity, ItemDTO itemDTO, Long id) {
         Optional<BookEntity> optionalBookEntity = bookRepository.findById(id);
         if(optionalBookEntity.isEmpty()){
             throw new BookNotFoundException("Book not found");
         }
+        BookEntity bookEntity = optionalBookEntity.get();
         List<CartEntity> cartEntityList = cartRepository.findByUserEntity(userEntity);
         if(cartEntityList.isEmpty()){
             throw new CartNotFoundException("Cart not found");
         }
+
         ItemEntity itemEntity = ItemEntity.builder()
                 .bookEntity(optionalBookEntity.get())
                 .quantity(itemDTO.getQuantity())
