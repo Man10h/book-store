@@ -24,11 +24,7 @@ public class UserController {
     @GetMapping("/carts")
     @Operation(summary = "Get user's cart")
     public ResponseEntity<?> getCart(@AuthenticationPrincipal UserEntity userEntity){
-        try{
-            return ResponseEntity.ok(cartService.getCart(userEntity));
-        }catch (Exception e){
-            throw new ErrorException(e.getMessage());
-        }
+        return ResponseEntity.ok(cartService.getCart(userEntity));
     }
 
     @PostMapping("/carts/items/{id}")
@@ -36,35 +32,23 @@ public class UserController {
     public ResponseEntity<?> addItem(@AuthenticationPrincipal UserEntity userEntity,
                                      @RequestBody ItemDTO itemDTO,
                                      @PathVariable("id") Long id){
-        try{
-            cartService.addItem(userEntity, itemDTO, id);
-            return ResponseEntity.ok().build();
-        }catch (Exception e){
-            throw new ErrorException(e.getMessage());
-        }
+        cartService.addItem(userEntity, itemDTO, id);
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/items/{itemId}")
     @Operation(summary = "Update item in cart")
     public ResponseEntity<?> updateItem(@PathVariable(name = "itemId") Long itemId,
                                         @RequestBody ItemDTO itemDTO){
-        try{
-            cartService.updateItem(itemDTO, itemId);
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            throw new ErrorException(e.getMessage());
-        }
+        cartService.updateItem(itemDTO, itemId);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/items/{itemId}")
     @Operation(summary = "delete item in carts")
     public ResponseEntity<?> deleteItem(@PathVariable(name = "itemId") Long itemId){
-        try{
-            cartService.deleteItem(itemId);
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            throw new ErrorException(e.getMessage());
-        }
+        cartService.deleteItem(itemId);
+        return ResponseEntity.ok().build();
     }
 
 }

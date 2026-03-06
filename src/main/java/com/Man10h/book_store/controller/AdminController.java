@@ -1,7 +1,5 @@
 package com.Man10h.book_store.controller;
 
-import com.Man10h.book_store.exception.exception.BookException;
-import com.Man10h.book_store.exception.exception.UserException;
 import com.Man10h.book_store.model.dto.BookDTO;
 import com.Man10h.book_store.service.BookService;
 import com.Man10h.book_store.service.UserService;
@@ -40,23 +38,15 @@ public class AdminController {
     @PutMapping("/users/{userId}")
     @Operation(summary = "Update user's role")
     public ResponseEntity<?> updateUserRole(@PathVariable(name = "userId") Long userId){
-        try{
-            userService.updateUserRole(userId);
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            throw new UserException(e.getMessage());
-        }
+        userService.updateUserRole(userId);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/users/{userId}")
     @Operation(summary = "Delete user")
     public ResponseEntity<?> deleteUser(@PathVariable(name = "userId") Long userId){
-        try{
-            userService.deleteUser(userId);
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            throw new UserException(e.getMessage());
-        }
+        userService.deleteUser(userId);
+        return ResponseEntity.ok().build();
     }
 
     //Module: Management Book
@@ -80,12 +70,8 @@ public class AdminController {
     @Operation(summary = "Add book")
     public ResponseEntity<?> addBook(@ModelAttribute BookDTO bookDTO,
                                      @RequestPart(name = "images") List<MultipartFile> images){
-        try{
-            bookService.addBook(bookDTO, images);
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            throw new BookException(e.getMessage());
-        }
+        bookService.addBook(bookDTO, images);
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/books/{id}")
@@ -93,22 +79,14 @@ public class AdminController {
     public ResponseEntity<?> updateBook(@ModelAttribute BookDTO bookDTO,
                                         @PathVariable(name = "id") Long id,
                                         @RequestPart(name = "images") List<MultipartFile> images){
-        try{
-            bookService.updateBook(id, bookDTO, images);
-            return ResponseEntity.ok().build();
-        }catch (Exception e) {
-            throw new BookException(e.getMessage());
-        }
+        bookService.updateBook(id, bookDTO, images);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/books/{id}")
     @Operation(summary = "Delete book")
     public ResponseEntity<?> deleteBook(@PathVariable(name = "id") Long id){
-        try{
-            bookService.deleteBook(id);
-            return ResponseEntity.ok().build();
-        }catch (Exception e){
-            throw new BookException(e.getMessage());
-        }
+        bookService.deleteBook(id);
+        return ResponseEntity.ok().build();
     }
 }

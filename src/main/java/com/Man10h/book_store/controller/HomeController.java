@@ -78,68 +78,48 @@ public class HomeController {
     @Operation(summary = "Verify account")
     public ResponseEntity<?> verify(@RequestParam(name = "email") String email,
                                     @RequestParam(name = "code") String code) {
-        try{
-            boolean result = authenticationService.verify(email, code);
-            if(!result) {
-                return ResponseEntity.badRequest().build();
-            }
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            throw new ErrorException(e.getMessage());
+        boolean result = authenticationService.verify(email, code);
+        if(!result) {
+            return ResponseEntity.badRequest().build();
         }
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/resend")
     @Operation(summary = "Resend verification code")
     public ResponseEntity<?> verify(@RequestParam(name = "email") String email) {
-        try{
-            boolean result = authenticationService.resendVerificationCode(email);
-            if(!result) {
-                return ResponseEntity.badRequest().build();
-            }
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            throw new ErrorException(e.getMessage());
+        boolean result = authenticationService.resendVerificationCode(email);
+        if(!result) {
+            return ResponseEntity.badRequest().build();
         }
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/forgot-password")
     @Operation(summary = "Forgot password")
     public ResponseEntity<?> forgotPassword(@RequestParam(name = "email") String email) {
-        try{
-            boolean result = authenticationService.forgotPassword(email);
-            if(!result) {
-                return ResponseEntity.badRequest().build();
-            }
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            throw new ErrorException(e.getMessage());
+        boolean result = authenticationService.forgotPassword(email);
+        if(!result) {
+            return ResponseEntity.badRequest().build();
         }
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/token-info")
     @Operation(summary = "Token info")
     public ResponseEntity<?> tokenInfo(@RequestParam(name = "token") String token) {
-        try{
-            UserResponse result = authenticationService.getUserByToken(token);
-            if(result == null) {
-                return ResponseEntity.badRequest().build();
-            }
-            return ResponseEntity.ok(result);
-        } catch (Exception e) {
-            throw new ErrorException(e.getMessage());
+        UserResponse result = authenticationService.getUserByToken(token);
+        if(result == null) {
+            return ResponseEntity.badRequest().build();
         }
+        return ResponseEntity.ok(result);
     }
 
     @MessageMapping("/chatPrivate")
     @Operation(summary = "Chat")
     public ResponseEntity<?> sendToUser(@Payload ChatMessage message) {
-        try{
-            userService.sendMessage(message);
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            throw new ErrorException(e.getMessage());
-        }
+        userService.sendMessage(message);
+        return ResponseEntity.ok().build();
     }
 
 //    @GetMapping("/oauth2/token")
