@@ -91,8 +91,16 @@ public class CartServiceImpl implements CartService {
     }
 
     @Transactional
-    public void updateItem(ItemDTO itemDTO, Long itemId) {
+    public void updateItem(ItemDTO itemDTO, Long itemId, UserEntity userEntity) {
         try{
+            List<CartEntity> cartEntityList = cartRepository.findByUserEntity(userEntity);
+            if(cartEntityList.isEmpty()){
+                throw new CartNotFoundException("Cart not found");
+            }
+            CartEntity cartEntity = cartEntityList.getFirst();
+            if(itemRepository.findItemInCart(itemId, cartEntity.getId()).isEmpty()){
+                throw new ItemNotFoundException("Item not found in cart");
+            }
             itemRepository.updateQuantity(itemId, itemDTO.getQuantity());
         }catch (ItemNotFoundException e) {
             throw new ItemNotFoundException(e.getMessage());
@@ -103,8 +111,16 @@ public class CartServiceImpl implements CartService {
     }
 
     @Transactional
-    public void deleteItem(Long itemId) {
+    public void deleteItem(Long itemId, UserEntity userEntity) {
         try{
+            List<CartEntity> cartEntityList = cartRepository.findByUserEntity(userEntity);
+            if(cartEntityList.isEmpty()){
+                throw new CartNotFoundException("Cart not found");
+            }
+            CartEntity cartEntity = cartEntityList.getFirst();
+            if(itemRepository.findItemInCart(itemId, cartEntity.getId()).isEmpty()){
+                throw new ItemNotFoundException("Item not found in cart");
+            }
             itemRepository.deleteById(itemId);
         } catch (ItemNotFoundException e) {
             throw new ItemNotFoundException(e.getMessage());

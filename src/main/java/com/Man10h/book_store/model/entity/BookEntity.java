@@ -34,4 +34,7 @@ public class BookEntity {
 
     @OneToMany(mappedBy = "bookEntity", cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
     private List<ItemEntity> itemEntityList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "bookEntity", cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    private List<ImageEntity> orderItemEntityList = new ArrayList<>();
 }

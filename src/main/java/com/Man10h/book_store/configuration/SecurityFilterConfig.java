@@ -49,7 +49,7 @@ public class SecurityFilterConfig {
                         .requestMatchers("/api/v1/user**", "/api/v1/user/**").hasRole("USER")
                         .anyRequest().authenticated()
             )
-            .oauth2Login(oauth2 -> oauth2.successHandler(customSuccessHandler))
+            // .oauth2Login(oauth2 -> oauth2.successHandler(customSuccessHandler))
         ;
         return http.build();
     }

@@ -1,19 +1,24 @@
 package com.Man10h.book_store.controller;
 
 import com.Man10h.book_store.model.dto.BookDTO;
+import com.Man10h.book_store.model.entity.UserEntity;
 import com.Man10h.book_store.service.BookService;
 import com.Man10h.book_store.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.awt.print.Book;
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/admin")
 @RequiredArgsConstructor
@@ -66,15 +71,25 @@ public class AdminController {
         return ResponseEntity.ok(bookService.findById(id));
     }
 
-    @PostMapping("/books")
+    @PostMapping(value = "/books", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "Add book")
-    public ResponseEntity<?> addBook(@ModelAttribute BookDTO bookDTO,
-                                     @RequestPart(name = "images") List<MultipartFile> images){
+    public ResponseEntity<String> addBook(@AuthenticationPrincipal UserEntity userEntity,
+                                          @ModelAttribute("bookDTO") BookDTO bookDTO,
+                                          @RequestPart("images") List<MultipartFile> images){
+        log.info(bookDTO.getTitle() + userEntity.getUsername());
         bookService.addBook(bookDTO, images);
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/books/{id}")
+    @PostMapping(value = "/test", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<?> test(@AuthenticationPrincipal UserEntity userEntity,
+                                  @ModelAttribute BookDTO bookDTO,
+                                  @RequestPart("images") List<MultipartFile> images){
+        log.info(bookDTO.getTitle() + userEntity.getUsername() + images.size());
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping(value = "/books/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "Update book")
     public ResponseEntity<?> updateBook(@ModelAttribute BookDTO bookDTO,
                                         @PathVariable(name = "id") Long id,

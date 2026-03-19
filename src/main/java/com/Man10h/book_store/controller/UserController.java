@@ -4,6 +4,7 @@ import com.Man10h.book_store.exception.ErrorException;
 import com.Man10h.book_store.model.dto.ItemDTO;
 import com.Man10h.book_store.model.entity.UserEntity;
 import com.Man10h.book_store.service.CartService;
+import com.Man10h.book_store.service.PaymentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -20,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final CartService cartService;
+    private final PaymentService paymentService;
 
     @GetMapping("/carts")
     @Operation(summary = "Get user's cart")
@@ -39,16 +43,29 @@ public class UserController {
     @PutMapping("/items/{itemId}")
     @Operation(summary = "Update item in cart")
     public ResponseEntity<?> updateItem(@PathVariable(name = "itemId") Long itemId,
-                                        @RequestBody ItemDTO itemDTO){
-        cartService.updateItem(itemDTO, itemId);
+                                        @RequestBody ItemDTO itemDTO,
+                                        @AuthenticationPrincipal UserEntity userEntity){
+        cartService.updateItem(itemDTO, itemId, userEntity);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/items/{itemId}")
     @Operation(summary = "delete item in carts")
-    public ResponseEntity<?> deleteItem(@PathVariable(name = "itemId") Long itemId){
-        cartService.deleteItem(itemId);
+    public ResponseEntity<?> deleteItem(@PathVariable(name = "itemId") Long itemId,
+                                        @AuthenticationPrincipal UserEntity userEntity){
+        cartService.deleteItem(itemId, userEntity);
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/checkout")
+    @Operation(summary = "checkout order")
+    public ResponseEntity<String> checkout(@AuthenticationPrincipal UserEntity userEntity){
+        return ResponseEntity.ok(paymentService.checkout(userEntity));
+    }
+
+    @GetMapping("/vnpay/callback")
+    public ResponseEntity<?> vnpayCallback(@RequestParam Map<String, String> params) {
+        paymentService.callback(params);
+        return ResponseEntity.ok().build();
+    }
 }

@@ -1,13 +1,17 @@
 package com.Man10h.book_store.repository;
 
 import com.Man10h.book_store.model.dto.ItemDTO;
+import com.Man10h.book_store.model.entity.CartEntity;
 import com.Man10h.book_store.model.entity.ItemEntity;
+import com.Man10h.book_store.model.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Repository
 public interface ItemRepository extends JpaRepository<ItemEntity, Long> {
@@ -39,4 +43,15 @@ public interface ItemRepository extends JpaRepository<ItemEntity, Long> {
     where i.id = :id AND :status is not  null
 """)
     void updateStatus(@Param("id") Long id, @Param("status") String status);
+
+
+    @Query("""
+       select i from ItemEntity i
+       join i.cartEntity c 
+       where i.id = :itemId and c.id = :cartId
+""")
+    Optional<ItemEntity> findItemInCart(@Param("itemId") Long itemId,
+                                  @Param("cartId") Long cartId);
+
+    void deleteByCartEntity(CartEntity cartEntity);
 }

@@ -19,7 +19,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
 
   liquibase:
     change-log: classpath:/db/changelog/appchange-log.xml
@@ -69,3 +69,9 @@ jwt:
 
 frontend:
   url: ${FRONTEND_URL:http://localhost:5187}
+
+vnpay:
+  tmnCode: DEMO
+  hashSecret: DEMOSECRETKEY
+  payUrl: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+  returnUrl: http://localhost:8080/api/user/vnpay/callback

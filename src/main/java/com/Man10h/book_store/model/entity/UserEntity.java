@@ -43,7 +43,7 @@ public class UserEntity implements Serializable, UserDetails, Principal {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return enabled;
     }
 
     @Id
@@ -62,6 +62,9 @@ public class UserEntity implements Serializable, UserDetails, Principal {
     @ManyToOne
     @JoinColumn(name = "role_id")
     private RoleEntity roleEntity;
+
+    @OneToMany(mappedBy = "userEntity", cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    private List<CartEntity> orderEntityList = new ArrayList<>();
 
     @Override
     public String getName() {

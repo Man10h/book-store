@@ -90,6 +90,7 @@ public class BookServiceImpl implements BookService {
     @Transactional
     @CacheEvict(value = "books", allEntries = true)
     public void addBook(BookDTO bookDTO, List<MultipartFile> images) {
+        log.info("Adding new book " + bookDTO.getTitle());
         BookEntity bookEntity = BookEntity.builder()
                 .title(bookDTO.getTitle())
                 .author(bookDTO.getAuthor())
@@ -100,6 +101,7 @@ public class BookServiceImpl implements BookService {
                 .itemEntityList(new ArrayList<>())
                 .build();
         bookRepository.save(bookEntity);
+        log.info(bookEntity.getTitle());
         addImage(bookEntity, images);
     }
 
