@@ -5,14 +5,14 @@ spring:
 
   datasource:
     username: ${SPRING_DATASOURCE_USERNAME:root}
-    password: ${SPRING_DATASOURCE_PASSWORD:Manh2004}
-    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/book-store}
+    password: ${SPRING_DATASOURCE_PASSWORD:}
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/book-store?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
 
   data:
     redis:
       port: ${SPRING_DATA_REDIS_PORT:6379}
-      host: ${SPRING_DATA_REDIS_HOST:redis}
-      password: ${SPRING_DATA_REDIS_PASSWORD:Manh2004}
+      host: ${SPRING_DATA_REDIS_HOST:localhost}
+      password: ${SPRING_DATA_REDIS_PASSWORD:}
 
   cache:
     type: redis
@@ -20,6 +20,9 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+    properties:
+      hibernate:
+        default_batch_fetch_size: 25
 
   liquibase:
     change-log: classpath:/db/changelog/appchange-log.xml
@@ -28,8 +31,8 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: ${SPRING_MAIL_USERNAME:nguyenmanhlc10@gmail.com}
-    password: ${SPRING_MAIL_PASSWORD:aaof rvju disf hati}
+    username: ${SPRING_MAIL_USERNAME:}
+    password: ${SPRING_MAIL_PASSWORD:}
     protocol: smtp
     properties:
       mail:
@@ -44,8 +47,8 @@ spring:
       client:
         registration:
           google:
-            client-id: ${GOOGLE_CLIENT_ID:375623715767-3ou3vkfo31733dab9htclek6rlhbjq3c.apps.googleusercontent.com}
-            client-secret: ${GOOGLE_CLIENT_SECRET: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}
+            client-id: ${GOOGLE_CLIENT_ID:}
+            client-secret: ${GOOGLE_CLIENT_SECRET:}
             redirect-uri: ${GOOGLE_REDIRECT_URI:http://localhost:8080/login/oauth2/code/book-store}
             scope:
               - email
@@ -60,18 +63,29 @@ server:
   port: 8080
 
 cloudinary:
-  api_key: ${CLOUDINARY_API_KEY:829565713471837}
-  api_secret: ${CLOUDINARY_API_SECRET:oHpiWWc8qqRFZUkj-kBtXhsVcJ8}
-  cloud_name: ${CLOUDINARY_CLOUD_NAME:djuq2enmy}
+  api_key: ${CLOUDINARY_API_KEY:}
+  api_secret: ${CLOUDINARY_API_SECRET:}
+  cloud_name: ${CLOUDINARY_CLOUD_NAME:}
 
 jwt:
-  secret: ${JWT_SECRET:IHog2o7M6EPmoJ4Y4WBiLbvbCJ+AnYe3C1VmUQdW4gg=}
+  secret: ${JWT_SECRET:ZGV2ZWxvcG1lbnQtb25seS1qd3Qtc2VjcmV0LWNoYW5nZS1tZQ==}
 
 frontend:
   url: ${FRONTEND_URL:http://localhost:5187}
+  oauth2-callback-url: ${FRONTEND_OAUTH2_CALLBACK_URL:http://localhost/oauth2/callback}
 
 vnpay:
-  tmnCode: DEMO
-  hashSecret: DEMOSECRETKEY
-  payUrl: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
-  returnUrl: http://localhost:8080/api/user/vnpay/callback
+  tmnCode: ${VNPAY_TMN_CODE:DEMO}
+  hashSecret: ${VNPAY_HASH_SECRET:DEMOSECRETKEY}
+  payUrl: ${VNPAY_PAY_URL:https://sandbox.vnpayment.vn/paymentv2/vpcpay.html}
+  returnUrl: ${VNPAY_RETURN_URL:http://localhost:8080/api/v1/user/vnpay/callback}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true

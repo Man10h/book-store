@@ -7,6 +7,7 @@ import com.Man10h.book_store.service.CartService;
 import com.Man10h.book_store.service.PaymentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +35,7 @@ public class UserController {
     @PostMapping("/carts/items/{id}")
     @Operation(summary = "Add item to cart")
     public ResponseEntity<?> addItem(@AuthenticationPrincipal UserEntity userEntity,
-                                     @RequestBody ItemDTO itemDTO,
+                                     @Valid @RequestBody ItemDTO itemDTO,
                                      @PathVariable("id") Long id){
         cartService.addItem(userEntity, itemDTO, id);
         return ResponseEntity.ok().build();
@@ -43,7 +44,7 @@ public class UserController {
     @PutMapping("/items/{itemId}")
     @Operation(summary = "Update item in cart")
     public ResponseEntity<?> updateItem(@PathVariable(name = "itemId") Long itemId,
-                                        @RequestBody ItemDTO itemDTO,
+                                        @Valid @RequestBody ItemDTO itemDTO,
                                         @AuthenticationPrincipal UserEntity userEntity){
         cartService.updateItem(itemDTO, itemId, userEntity);
         return ResponseEntity.ok().build();

@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -15,8 +14,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import jakarta.servlet.http.HttpServletResponse;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -45,11 +42,12 @@ public class SecurityFilterConfig {
                         .requestMatchers("/api/v1/home**", "/api/v1/home/**").permitAll()
                         .requestMatchers("/oauth2/**", "/login/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
+                        .requestMatchers("/actuator/health", "/actuator/health/**", "/actuator/info").permitAll()
                         .requestMatchers("/api/v1/admin**", "/api/v1/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/v1/user**", "/api/v1/user/**").hasRole("USER")
+                        .requestMatchers("/api/v1/user**", "/api/v1/user/**").hasAnyRole("USER", "ADMIN")
                         .anyRequest().authenticated()
             )
-            // .oauth2Login(oauth2 -> oauth2.successHandler(customSuccessHandler))
+            .oauth2Login(oauth2 -> oauth2.successHandler(customSuccessHandler))
         ;
         return http.build();
     }

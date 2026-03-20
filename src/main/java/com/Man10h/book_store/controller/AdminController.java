@@ -15,7 +15,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.awt.print.Book;
 import java.util.List;
 
 @Slf4j
@@ -57,8 +56,8 @@ public class AdminController {
     //Module: Management Book
     @GetMapping("/books")
     @Operation(summary = "Get all books")
-    public ResponseEntity<?> getBooks(@RequestParam(name = "text") String text,
-                                      @RequestParam(name = "type") String type,
+    public ResponseEntity<?> getBooks(@RequestParam(name = "text", required = false) String text,
+                                      @RequestParam(name = "type", required = false) String type,
                                       @RequestParam(name = "page") int page,
                                       @RequestParam(name = "size") int size){
         return ResponseEntity.ok(bookService.findByTitleAndAuthorAndType(text, type, PageRequest.of(page, size)));
@@ -75,8 +74,8 @@ public class AdminController {
     @Operation(summary = "Add book")
     public ResponseEntity<String> addBook(@AuthenticationPrincipal UserEntity userEntity,
                                           @ModelAttribute("bookDTO") BookDTO bookDTO,
-                                          @RequestPart("images") List<MultipartFile> images){
-        log.info(bookDTO.getTitle() + userEntity.getUsername());
+                                          @RequestPart(name = "images", required = false) List<MultipartFile> images){
+        log.info("Admin {} is adding book {}", userEntity.getUsername(), bookDTO.getTitle());
         bookService.addBook(bookDTO, images);
         return ResponseEntity.ok().build();
     }
@@ -84,8 +83,11 @@ public class AdminController {
     @PostMapping(value = "/test", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> test(@AuthenticationPrincipal UserEntity userEntity,
                                   @ModelAttribute BookDTO bookDTO,
-                                  @RequestPart("images") List<MultipartFile> images){
-        log.info(bookDTO.getTitle() + userEntity.getUsername() + images.size());
+                                  @RequestPart(name = "images", required = false) List<MultipartFile> images){
+        log.info("Received test upload for book {} from {} with {} images",
+                bookDTO.getTitle(),
+                userEntity.getUsername(),
+                images == null ? 0 : images.size());
         return ResponseEntity.ok().build();
     }
 
@@ -93,7 +95,7 @@ public class AdminController {
     @Operation(summary = "Update book")
     public ResponseEntity<?> updateBook(@ModelAttribute BookDTO bookDTO,
                                         @PathVariable(name = "id") Long id,
-                                        @RequestPart(name = "images") List<MultipartFile> images){
+                                        @RequestPart(name = "images", required = false) List<MultipartFile> images){
         bookService.updateBook(id, bookDTO, images);
         return ResponseEntity.ok().build();
     }

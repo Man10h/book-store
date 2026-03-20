@@ -30,8 +30,8 @@ public class CustomSuccessHandler implements AuthenticationSuccessHandler {
     private final RoleRepository roleRepository;
     private final CartRepository cartRepository;
 
-    @Value("${frontend.url}")
-    private String frontendUrl;
+    @Value("${frontend.oauth2-callback-url}")
+    private String frontendOauth2CallbackUrl;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -71,9 +71,7 @@ public class CustomSuccessHandler implements AuthenticationSuccessHandler {
 
         String jwt = tokenService.generateToken(userEntity);
 
-        response.sendRedirect(
-                frontendUrl + "/oauth2/callback?token=" + jwt
-        );
+        response.sendRedirect(frontendOauth2CallbackUrl + "?token=" + jwt);
     }
 
     private String generateUniqueUsername(String email) {

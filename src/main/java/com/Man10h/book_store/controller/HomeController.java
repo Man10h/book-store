@@ -36,8 +36,8 @@ public class HomeController {
 
     @GetMapping("/books")
     @Operation(summary = "Get all books")
-    public ResponseEntity<?> getBooks(@RequestParam(name = "text") String text,
-                                      @RequestParam(name = "type") String type,
+    public ResponseEntity<?> getBooks(@RequestParam(name = "text", required = false) String text,
+                                      @RequestParam(name = "type", required = false) String type,
                                       @RequestParam(name = "page") int page,
                                       @RequestParam(name = "size") int size){
         return ResponseEntity.ok(bookService.findByTitleAndAuthorAndType(text, type, PageRequest.of(page, size)));

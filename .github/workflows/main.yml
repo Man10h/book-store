@@ -19,10 +19,10 @@ jobs:
           password: ${{ secrets.DOCKER_TOKEN }}
 
       - name: Build image
-        run: docker build -t nguyenmanhlc10/bookstore:latest .
+        run: docker build -t nguyenmanhlc10/bookstorebe:latest .
 
       - name: Push image
-        run: docker push nguyenmanhlc10/bookstore:latest
+        run: docker push nguyenmanhlc10/bookstorebe:latest
 
   deploy:
     needs: build-and-push
@@ -36,6 +36,6 @@ jobs:
           username: deploy
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
-            docker pull nguyenmanhlc10/bookstore:latest
+            docker pull nguyenmanhlc10/bookstorebe:latest
             docker compose -f /home/deploy/app/docker-compose.yml up down
             docker compose -f /home/deploy/app/docker-compose.yml up -d

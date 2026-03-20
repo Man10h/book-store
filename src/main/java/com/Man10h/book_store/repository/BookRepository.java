@@ -17,11 +17,12 @@ public interface BookRepository extends JpaRepository<BookEntity, Long> {
     @Query("""
     select distinct b from BookEntity b 
     where (
-             :text is null\s
+             :text is null
+             or :text = ''
              or b.title like concat('%', :text, '%')
              or b.author like concat('%', :text, '%')
       )
-    or (:type is null or b.type = :type)
+    and (:type is null or :type = '' or b.type = :type)
                                           
 """)
     Page<BookEntity> findByTitleAndAuthorAndType(@Param("text") String text,
