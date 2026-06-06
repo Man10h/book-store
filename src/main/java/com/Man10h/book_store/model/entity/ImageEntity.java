@@ -15,7 +15,7 @@ public class ImageEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String url;
-    private boolean isActive;
+//    private boolean isActive;
 
     @ManyToOne
     @JoinColumn(name = "book_id")

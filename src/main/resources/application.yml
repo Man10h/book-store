@@ -1,11 +1,10 @@
 spring:
-
   application:
     name: book-store
 
   datasource:
     username: ${SPRING_DATASOURCE_USERNAME:root}
-    password: ${SPRING_DATASOURCE_PASSWORD:}
+    password: ${SPRING_DATASOURCE_PASSWORD:Manh2004}
     url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/book-store?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
 
   data:
@@ -19,7 +18,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     properties:
       hibernate:
         default_batch_fetch_size: 25
@@ -31,8 +30,8 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: ${SPRING_MAIL_USERNAME:}
-    password: ${SPRING_MAIL_PASSWORD:}
+    username: ${SPRING_MAIL_USERNAME:default}
+    password: ${SPRING_MAIL_PASSWORD:default}
     protocol: smtp
     properties:
       mail:
@@ -47,8 +46,8 @@ spring:
       client:
         registration:
           google:
-            client-id: ${GOOGLE_CLIENT_ID:}
-            client-secret: ${GOOGLE_CLIENT_SECRET:}
+            client-id: ${GOOGLE_CLIENT_ID:default}
+            client-secret: ${GOOGLE_CLIENT_SECRET:default}
             redirect-uri: ${GOOGLE_REDIRECT_URI:http://localhost:8080/login/oauth2/code/book-store}
             scope:
               - email
@@ -63,9 +62,9 @@ server:
   port: 8080
 
 cloudinary:
-  api_key: ${CLOUDINARY_API_KEY:}
-  api_secret: ${CLOUDINARY_API_SECRET:}
-  cloud_name: ${CLOUDINARY_CLOUD_NAME:}
+  api_key: ${CLOUDINARY_API_KEY:default}
+  api_secret: ${CLOUDINARY_API_SECRET:default}
+  cloud_name: ${CLOUDINARY_CLOUD_NAME:default}
 
 jwt:
   secret: ${JWT_SECRET:ZGV2ZWxvcG1lbnQtb25seS1qd3Qtc2VjcmV0LWNoYW5nZS1tZQ==}
@@ -89,3 +88,4 @@ management:
     health:
       probes:
         enabled: true
+

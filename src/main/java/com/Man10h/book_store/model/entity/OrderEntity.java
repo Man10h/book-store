@@ -33,6 +33,6 @@ public class OrderEntity {
     @OneToMany(mappedBy = "orderEntity", cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
     private List<OrderItemEntity> orderItemEntityList;
 
-    @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    @OneToOne(mappedBy = "orderEntity", cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
     private PaymentEntity paymentEntity;
 }

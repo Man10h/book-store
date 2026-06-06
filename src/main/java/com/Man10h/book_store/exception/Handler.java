@@ -28,7 +28,7 @@ public class Handler {
 
     @ExceptionHandler(ErrorException.class)
     public ResponseEntity<ErrorMessage> handleException(ErrorException e) {
-        return buildErrorResponse(HttpStatus.FORBIDDEN, e.getMessage());
+        return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
     }
 
     @ExceptionHandler(AuthenticationFailException.class)
@@ -43,32 +43,32 @@ public class Handler {
 
     @ExceptionHandler(AccountExistsException.class)
     public ResponseEntity<ErrorMessage> handleAccountExistsException(AccountExistsException e) {
-        return buildErrorResponse(HttpStatus.FORBIDDEN, e.getMessage());
+        return buildErrorResponse(HttpStatus.CONFLICT, e.getMessage());
     }
 
     @ExceptionHandler(AccountNotFoundException.class)
     public ResponseEntity<ErrorMessage> handleAccountNotFoundException(AccountNotFoundException e) {
-        return buildErrorResponse(HttpStatus.FORBIDDEN, e.getMessage());
+        return buildErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
     }
 
     @ExceptionHandler(BookNotFoundException.class)
     public ResponseEntity<ErrorMessage> handleBookNotFoundException(BookNotFoundException e) {
-        return buildErrorResponse(HttpStatus.FORBIDDEN, e.getMessage());
+        return buildErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
     }
 
     @ExceptionHandler(CartNotFoundException.class)
     public ResponseEntity<ErrorMessage> handleCartNotFoundException(CartNotFoundException e) {
-        return buildErrorResponse(HttpStatus.FORBIDDEN, e.getMessage());
+        return buildErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
     }
 
     @ExceptionHandler(ItemNotFoundException.class)
     public ResponseEntity<ErrorMessage> handleItemNotFoundException(ItemNotFoundException e) {
-        return buildErrorResponse(HttpStatus.FORBIDDEN, e.getMessage());
+        return buildErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
     }
 
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ErrorMessage> handleUserNotFoundException(UserNotFoundException e) {
-        return buildErrorResponse(HttpStatus.FORBIDDEN, e.getMessage());
+        return buildErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
     }
 
     @ExceptionHandler(IllegalStateException.class)
@@ -78,7 +78,7 @@ public class Handler {
 
     @ExceptionHandler(PaymentNotFoundException.class)
     public ResponseEntity<ErrorMessage> handlePaymentNotFoundException(PaymentNotFoundException e) {
-        return buildErrorResponse(HttpStatus.FORBIDDEN, e.getMessage());
+        return buildErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
     }
 
     @ExceptionHandler(InvalidVNPAYSignatureException.class)

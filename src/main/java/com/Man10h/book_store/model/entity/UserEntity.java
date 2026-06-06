@@ -64,7 +64,7 @@ public class UserEntity implements Serializable, UserDetails, Principal {
     private RoleEntity roleEntity;
 
     @OneToMany(mappedBy = "userEntity", cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
-    private List<CartEntity> orderEntityList = new ArrayList<>();
+    private List<OrderEntity> orderEntityList = new ArrayList<>();
 
     @Override
     public String getName() {

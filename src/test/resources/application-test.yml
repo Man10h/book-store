@@ -1,0 +1,73 @@
+spring:
+  application:
+    name: book-store-test
+
+  # 1. DATASOURCE
+  # Vì bạn dùng @ServiceConnection với Testcontainers, Spring Boot sẽ TỰ ĐỘNG
+  # tiêm url, username, password của container vào. Bạn không cần khai báo ở đây.
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  # 2. CACHE & REDIS
+  # Tắt kết nối Redis thật để tránh lỗi "Connection refused" nếu máy không bật Redis.
+  # Chuyển sang dùng bộ nhớ ảo (ConcurrentHashMap) của Java.
+  cache:
+    type: simple
+  data:
+    redis:
+      repositories:
+        enabled: false
+
+  # 3. JPA & LIQUIBASE
+  jpa:
+    hibernate:
+      ddl-auto: none # Đảm bảo Entity map đúng với bảng do Liquibase tạo ra
+    show-sql: true # Nên bật để xem câu query khi chạy test
+
+  liquibase:
+    change-log: classpath:/db/changelog/appchange-log.xml
+    enabled: true
+
+  # 4. MAIL
+  # Trỏ về localhost để chặn ứng dụng vô tình gửi email thật ra ngoài
+  mail:
+    host: localhost
+    port: 1025
+
+  # 5. OAUTH2 (Khắc phục lỗi Client id must not be empty)
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: "test-fake-client-id"
+            client-secret: "test-fake-client-secret"
+            redirect-uri: "http://localhost:8080/login/oauth2/code/google"
+
+# ==========================================
+# 6. MỘT SỐ CẤU HÌNH BÊN THỨ 3 (DUMMY DATA)
+# Cung cấp dữ liệu giả để Spring khởi tạo Bean thành công
+# ==========================================
+
+cloudinary:
+  api_key: "test-api-key"
+  api_secret: "test-api-secret"
+  cloud_name: "test-cloud-name"
+
+jwt:
+  # Base64 giả (đủ độ dài an toàn)
+  secret: "VGhpcy1pcy1hLXRlc3Qtc2VjcmV0LWtleS1mb3Itand0LXRva2VuLWdlbmVyYXRpb24="
+
+frontend:
+  url: "http://localhost:3000"
+  oauth2-callback-url: "http://localhost:3000/oauth2/callback"
+
+vnpay:
+  tmnCode: "TESTCODE"
+  hashSecret: "FAKE_SECRET_KEY_NEEDS_TO_BE_LONG_ENOUGH_FOR_HMAC"
+  payUrl: "http://localhost/vnpay"
+  returnUrl: "http://localhost/vnpay/return"
+
+logging:
+  level:
+    org.springframework.security: TRACE

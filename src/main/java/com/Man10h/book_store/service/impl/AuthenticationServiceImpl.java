@@ -3,6 +3,7 @@ package com.Man10h.book_store.service.impl;
 import com.Man10h.book_store.exception.business.AccountExistsException;
 import com.Man10h.book_store.exception.business.AccountNotFoundException;
 import com.Man10h.book_store.exception.business.AccountDisabledException;
+import com.Man10h.book_store.exception.business.RoleNotFoundException;
 import com.Man10h.book_store.exception.client.AuthenticationFailException;
 import com.Man10h.book_store.exception.ErrorException;
 import com.Man10h.book_store.model.dto.UserDTO;
@@ -25,6 +26,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -53,27 +55,27 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public String login(UserLoginDTO userLoginDTO) {
+        Authentication authentication;
         try {
-
-            Authentication authentication = authenticationManager.authenticate(
+            authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             userLoginDTO.getUsername(),
                             userLoginDTO.getPassword()
                     )
             );
 
-            UserEntity user = (UserEntity) authentication.getPrincipal();
-
-            if (!user.getEnabled()) {
-                throw new AccountDisabledException("Account disabled");
-            }
-
-            return tokenService.generateToken(user);
-
-        } catch (BadCredentialsException | UsernameNotFoundException ex) {
+        } catch (BadCredentialsException | UsernameNotFoundException | DisabledException ex) {
             throw new AuthenticationFailException("Username or password is incorrect");
 
         }
+
+        UserEntity user = (UserEntity) authentication.getPrincipal();
+
+        if (!user.getEnabled()) {
+            throw new AccountDisabledException("Account disabled");
+        }
+
+        return tokenService.generateToken(user);
     }
 
     @Transactional
@@ -87,7 +89,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new AccountExistsException("Account already exists");
         }
 
-        RoleEntity role = roleRepository.findById(1L).orElse(null);
+        RoleEntity role = roleRepository.findById(1L).orElseThrow(() ->
+                new RoleNotFoundException("Role not found"));
         String code = generateCode();
         UserEntity user = UserEntity.builder()
                 .username(username)

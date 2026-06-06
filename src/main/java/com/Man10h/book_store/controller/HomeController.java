@@ -87,7 +87,7 @@ public class HomeController {
 
     @GetMapping("/resend")
     @Operation(summary = "Resend verification code")
-    public ResponseEntity<?> verify(@RequestParam(name = "email") String email) {
+    public ResponseEntity<?> resend(@RequestParam(name = "email") String email) {
         boolean result = authenticationService.resendVerificationCode(email);
         if(!result) {
             return ResponseEntity.badRequest().build();
@@ -140,11 +140,7 @@ public class HomeController {
 
     @GetMapping("/logout")
     public ResponseEntity<?> logout(){
-        try{
-            authenticationService.logout();
-            return ResponseEntity.ok().build();
-        }catch (Exception e) {
-            throw new ErrorException(e.getMessage());
-        }
+        authenticationService.logout();
+        return ResponseEntity.ok().build();
     }
 }

@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -28,7 +29,7 @@ public interface ItemRepository extends JpaRepository<ItemEntity, Long> {
 
 
 
-    @Modifying
+    @Modifying(clearAutomatically = true)
     @Transactional
     @Query(value = """
     update ItemEntity i set i.quantity = :quantity
@@ -54,4 +55,6 @@ public interface ItemRepository extends JpaRepository<ItemEntity, Long> {
                                   @Param("cartId") Long cartId);
 
     void deleteByCartEntity(CartEntity cartEntity);
+
+    List<ItemEntity> findByCartEntity_Id(Long id);
 }

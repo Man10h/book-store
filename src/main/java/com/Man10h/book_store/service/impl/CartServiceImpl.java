@@ -81,14 +81,13 @@ public class CartServiceImpl implements CartService {
 
     @Transactional
     public void updateItem(ItemDTO itemDTO, Long itemId, UserEntity userEntity) {
+        CartEntity cartEntity = getOrCreateCart(userEntity);
+        if(itemRepository.findItemInCart(itemId, cartEntity.getId()).isEmpty()){
+            throw new ItemNotFoundException("Item not found in cart");
+        }
+
         try{
-            CartEntity cartEntity = getOrCreateCart(userEntity);
-            if(itemRepository.findItemInCart(itemId, cartEntity.getId()).isEmpty()){
-                throw new ItemNotFoundException("Item not found in cart");
-            }
             itemRepository.updateQuantity(itemId, itemDTO.getQuantity());
-        }catch (ItemNotFoundException e) {
-            throw new ItemNotFoundException(e.getMessage());
         }
         catch (Exception e) {
             throw new ErrorException(e.getMessage());
@@ -97,26 +96,17 @@ public class CartServiceImpl implements CartService {
 
     @Transactional
     public void deleteItem(Long itemId, UserEntity userEntity) {
-        try{
-            CartEntity cartEntity = getOrCreateCart(userEntity);
-            ItemEntity itemEntity = itemRepository.findItemInCart(itemId, cartEntity.getId())
-                    .orElseThrow(() -> new ItemNotFoundException("Item not found in cart"));
+        CartEntity cartEntity = getOrCreateCart(userEntity);
+        boolean isRemoved = cartEntity.getItemEntityList()
+                .removeIf(item -> itemId.equals(item.getId()));
 
-            if (cartEntity.getItemEntityList() != null) {
-                cartEntity.getItemEntityList().removeIf(item -> itemId.equals(item.getId()));
-            }
-            itemEntity.setCartEntity(null);
-            itemRepository.delete(itemEntity);
-            itemRepository.flush();
-        } catch (ItemNotFoundException e) {
-            throw new ItemNotFoundException(e.getMessage());
+        if (!isRemoved) {
+            throw new ItemNotFoundException("Item not found in cart");
         }
-        catch (Exception e) {
-            throw new ErrorException(e.getMessage());
-        }
+
     }
 
-    private CartEntity getOrCreateCart(UserEntity userEntity) {
+    public CartEntity getOrCreateCart(UserEntity userEntity) {
         List<CartEntity> cartEntityList = cartRepository.findByUserEntity(userEntity);
         if (!cartEntityList.isEmpty()) {
             return cartEntityList.getFirst();
